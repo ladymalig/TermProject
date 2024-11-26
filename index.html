@@ -1,66 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Movie App - Discover and Explore Movies">
-  <title>Movie App</title>
-
-  <!-- Google Font -->
+  <title>IT 4403 Movie SPA</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-
-  <!-- Bootstrap CSS -->
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-
-  <!-- Custom CSS -->
   <link href="styles.css" rel="stylesheet">
 </head>
 <body>
-  <!-- Header -->
   <header class="bg-dark text-white text-center p-3">
-    <h1>Movies</h1>
-  
+      <p>Lady Malig | IT 4403 Term Project | Kennesaw State University</p>
   </header>
-
-  <!-- Main Content -->
   <main class="container my-4">
-    <!-- Search Section -->
     <section id="search" class="mb-4">
-      <h2>Search Movies</h2>
+      <h2 class="text-muted">Search Movies</h2>
       <form id="search-form" class="form-inline">
-        <input type="text" id="search-input" class="form-control mr-2" placeholder="Search for movies or TV shows...">
+        <input type="text" id="search-input" class="form-control mr-2" placeholder="Search for movies or TV shows..." aria-label="Search">
         <button type="submit" class="btn btn-primary">Search</button>
       </form>
+      <div id="suggestion-box" style="position: absolute; z-index: 1000; background: white; border: 1px solid #ccc; max-width: 300px; display: none;"></div>
+      <button id="popular-btn" class="btn btn-primary mt-3">Top Movies</button>
+      <button id="discover-btn" class="btn btn-secondary mt-3">Discover by Genre</button>
     </section>
-
-    <!-- Results Section -->
-    <section id="results" class="mb-4">
-      <h2>Search Results</h2>
-      <div id="results-container" class="row">
-        <!-- Search results will be injected here dynamically -->
+    <div class="container-fluid">
+      <div class="row">
+        <div id="details" class="col-md-4 d-none">
+          <h2 class="text-muted">Movie Details</h2>
+          <div id="movie-details"></div>
+        </div>
+        <div id="results" class="col-md-8">
+          <div class="view-toggle text-left mb-3">
+            <button id="grid-view" class="btn btn-primary active">Grid View</button>
+            <button id="list-view" class="btn btn-secondary">List View</button>
+            <button id="filter-year-btn">Filter by Year</button>
+            <input type="number" id="year-input" placeholder="Enter Year" min="1900" max="2024" />
+          </div>
+          <div id="results-container" class="row"></div>
+          <div id="genre-results" class="mt-4">
+            <div id="genre-list" class="row"></div>
+            <div id="genre-details-container" class="mt-4"></div>
+          </div>
+          <div id="pagination" class="pagination-buttons text-center mt-4">
+            <button id="prev-page" class="btn btn-outline-secondary" disabled>Previous</button>
+            <button id="next-page" class="btn btn-outline-secondary">Next</button>
+          </div>
+        </div>
       </div>
-    </section>
-
-    <!-- Movie Details Section -->
-    <section id="details" class="d-none">
-      <h2>Movie Details</h2>
-      <div id="movie-details">
-        <!-- Movie details will be injected here dynamically -->
-      </div>
-    </section>
+    </div>
   </main>
-
-  <!-- Footer -->
-  <footer class="bg-dark text-white text-center p-3">
-      Lady Malig IT 4403 Final Project
-  </footer>
-
-  <!-- jQuery -->
+  
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-  <!-- Bootstrap JS -->
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
-  <!-- Custom JavaScript -->
-  <script src="js/script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
+
