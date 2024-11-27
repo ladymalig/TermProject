@@ -21,36 +21,47 @@ $(document).ready(function () {
   });
 
   
-  $('#search-form').on('submit', function (e) {
-    e.preventDefault();
-    currentQuery = $('#search-input').val().trim();
-    if (currentQuery) {
-      currentPage = 1;
-      fetchMovies();
-    } else {
-      alert('Please enter a search query!');
-    }
-  });
+    $('#search-form').on('submit', function (e) {
+        e.preventDefault();
+        currentQuery = $('#search-input').val().trim();
+        if (currentQuery) {
+            currentPage = 1;
+            $('#suggestion-box').hide().empty(); // Hide and clear suggestions
+            fetchMovies();
+        } else {
+            alert('Please enter a search query!');
+        }
+    });
+
+
 
    
-  $('#prev-page').on('click', function () {
-    if (currentPage > 1) {
-      currentPage--;
-      fetchMovies();
-    }
-  });
+    $('#prev-page').on('click', function () {
+        if (currentPage > 1) {
+            currentPage--;
+            fetchMovies(); // Call your movie-fetching function
+            $('#next-page').removeAttr('disabled'); // Enable "Next" button
+        }
 
-  $('#next-page').on('click', function () {
-    currentPage++;
-    fetchMovies();
-  });
+        if (currentPage === 1) {
+            $(this).attr('disabled', true); // Disable "Previous" button on first page
+        }
+    });
+
+    $('#next-page').on('click', function () {
+        currentPage++;
+        fetchMovies(); // Call your movie-fetching function
+        $('#prev-page').removeAttr('disabled'); // Enable "Previous" button
+    });
 
   
   $('#discover-btn').on('click', function () {
     loadGenres();
   });
 
-   loadPopularMovies();
+    $(document).ready(function () {
+        // Do not call loadPopularMovies() here to prevent auto-loading
+    });
 });
 
  function loadPopularMovies() {
@@ -67,41 +78,75 @@ $(document).ready(function () {
   });
 }
 
-function fetchMovies() {
-  const url = `${BASE_URL}/search/movie?api_key=${API_KEY}&language=en-US&query=${encodeURIComponent(currentQuery)}&page=${currentPage}`;
 
-  console.log('Fetching search results for query:', currentQuery);
-  $.ajax({
-    url: url,
-    method: 'GET',
-    success: function (response) {
-      console.log('Search results received:', response.results);
+let isTopMoviesVisible = false; // Track visibility state
 
-      const resultsContainer = $('#results-container');
-      resultsContainer.empty(); // Clear previous results
+$('#popular-btn').on('click', function () {
+    const resultsContainer = $('#results-container');
 
-      if (response.results.length === 0) {
-        resultsContainer.append('<p>No results found.</p>');
-        return;
-      }
-
-      response.results.forEach((movie) => {
-        const movieCard = `
-          <div class="result-item">
-            <img src="${IMAGE_BASE_URL}${movie.poster_path}" alt="${movie.title}" />
-            <h3>${movie.title}</h3>
-            <p>${movie.release_date}</p>
-            <button class="btn btn-info" onclick="fetchMovieDetails(${movie.id})">View Details</button>
-          </div>
-        `;
-        resultsContainer.append(movieCard);
-      });
-    },
-    error: function () {
-      alert('Failed to fetch search results. Please try again later.');
+    if (isTopMoviesVisible) {
+        // Hide Top Movies
+        resultsContainer.empty(); // Clear the container
+        isTopMoviesVisible = false;
+    } else {
+        // Show Top Movies
+        loadPopularMovies(); // Fetch and display top movies
+        isTopMoviesVisible = true;
     }
-  });
+});
+
+
+function fetchMovies() {
+    const url = `${BASE_URL}/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(currentQuery)}&page=${currentPage}`;
+    $.ajax({
+        url: url,
+        method: 'GET',
+        success: function (response) {
+            const resultsContainer = $('#results-container');
+            resultsContainer.empty();
+
+            if (response.results && response.results.length > 0) {
+                response.results.forEach(movie => {
+                    const poster = movie.poster_path ? `${IMAGE_BASE_URL}${movie.poster_path}` : 'placeholder.jpg';
+                    resultsContainer.append(`
+                        <div class="result-item">
+                            <img src="${poster}" alt="${movie.title}">
+                            <h3>${movie.title}</h3>
+                            <button class="view-details" data-id="${movie.id}">View Details</button>
+                        </div>
+                    `);
+                });
+
+                $('#pagination').show();
+
+                $('#prev-page').prop('disabled', currentPage === 1);
+                $('#next-page').prop('disabled', currentPage >= response.total_pages);
+
+            } else {
+                $('#pagination').hide();
+            }
+        },
+        error: function () {
+            alert('Failed to fetch movies.');
+        }
+    });
 }
+
+
+$('#prev-page').on('click', function () {
+    if (currentPage > 1) {
+        currentPage--;
+        fetchMovies();
+    }
+});
+
+$('#next-page').on('click', function () {
+    currentPage++;
+    fetchMovies();
+});
+
+
+
 
 
 
@@ -192,7 +237,7 @@ function loadGenres() {
             .join('')}
         </ul>
         <div id="trailer-container"></div> <!-- Container for the trailer -->
-        <button class="btn btn-secondary mt-3" onclick="minimizeDetails()">Close Details</button>
+        <button class="btn mt-3" onclick="minimizeDetails()">Close Details</button>
       `;
 
       detailsContainer.append(movieDetails);
@@ -298,7 +343,8 @@ function fetchPopularMedia() {
             <img src="${IMAGE_BASE_URL}${movie.poster_path}" alt="${movie.title}" />
             <h3>${movie.title}</h3>
             <p>${movie.release_date}</p>
-            <button class="btn btn-info" onclick="fetchMovieDetails(${movie.id})">View Details</button>
+                        <button class="btn btn-info custom-view-details" onclick="fetchMovieDetails(${movie.id})">View Details</button>
+
           </div>
         `;
         resultsContainer.append(movieCard);
@@ -315,82 +361,6 @@ $(document).ready(function () {
   });
 });
 
-
- function setButtonStyles() {
-  const buttons = document.querySelectorAll('button');
-
-  buttons.forEach((button) => {
-    // Apply styles
-    button.style.backgroundColor = '#6b6966';
-    button.style.color = 'white';
-    button.style.border = 'none';
-    button.style.borderRadius = '8px';
-    button.style.padding = '5px 15px';
-    button.style.fontSize = '.9rem';
-    button.style.fontWeight = 'bold';
-    button.style.cursor = 'pointer';
-    button.style.transition = 'background-color 0.3s ease';
-
- 
-    button.addEventListener('mouseover', () => {
-      button.style.backgroundColor = '#575551';
-    });
-    button.addEventListener('mouseout', () => {
-      button.style.backgroundColor = '#6b6966';
-    });
-  });
-}
-
- function observeDynamicButtons() {
-  const resultsContainer = document.querySelector('#results-container');
-
-   const observer = new MutationObserver(() => {
-    setButtonStyles();
-  });
-
-  observer.observe(resultsContainer, { childList: true, subtree: true });
-}
-
-
-document.addEventListener('DOMContentLoaded', () => {
-  setButtonStyles();
-  observeDynamicButtons();
-});
-
-
- function styleViewDetailsButtons() {
-   const viewDetailsButtons = document.querySelectorAll('.result-item button');
-
- 
-  viewDetailsButtons.forEach((button) => {
-    button.style.backgroundColor = '#945169';
-    button.style.color = 'white';
-    button.style.border = 'none';
-    button.style.borderRadius = '4px';
-    button.style.padding = '5px 10px';
-    button.style.fontSize = '0.84rem';
-    button.style.cursor = 'pointer';
-    button.style.transition = 'background-color 0.3s ease';
-
-     button.addEventListener('mouseover', () => {
-      button.style.backgroundColor = '#471527';
-    });
-    button.addEventListener('mouseout', () => {
-      button.style.backgroundColor = '#945169';
-    });
-  });
-}
-
- document.addEventListener('DOMContentLoaded', () => {
-   styleViewDetailsButtons();
-
-   const resultsContainer = document.querySelector('#results-container');
-  const observer = new MutationObserver(() => {
-    styleViewDetailsButtons();
-  });
-
-  observer.observe(resultsContainer, { childList: true, subtree: true });
-});
 
 document.querySelector('#filter-year-btn').addEventListener('click', () => {
   const year = document.querySelector('#year-input').value;
@@ -463,3 +433,25 @@ function debounce(func, delay) {
     timer = setTimeout(() => func.apply(this, args), delay);
   };
 }
+
+$(document).on('click', '.view-details', function () {
+    const movieId = $(this).data('id');
+    fetchMovieDetails(movieId);
+});
+
+resultsContainer.append(`
+    <div class="result-item">
+        <img src="${IMAGE_BASE_URL}${movie.poster_path}" alt="${movie.title}">
+        <h3>${movie.title}</h3>
+        <button class="view-details" data-id="${movie.id}">View Details</button>
+    </div>
+`);
+
+topVideosContainer.append(`
+    <div class="result-item">
+        <img src="${IMAGE_BASE_URL}${movie.poster_path}" alt="${movie.title}">
+        <h3>${movie.title}</h3>
+        <button class="view-details" data-id="${movie.id}">View Details</button>
+    </div>
+`);
+
