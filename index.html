@@ -1,7 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
 <head>
-  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Movie App - Discover and Explore Movies">
   <title>IT 4403 Movie SPA</title>
@@ -18,11 +16,11 @@
       <h2 class="text-muted">Search Movies</h2>
       <form id="search-form" class="form-inline">
         <input type="text" id="search-input" class="form-control mr-2" placeholder="Search for movies or TV shows..." aria-label="Search">
-        <button type="submit" class="btn btn-primary">Search</button>
+        <button type="submit" class="btn ">Search</button>
       </form>
       <div id="suggestion-box" style="position: absolute; z-index: 1000; background: white; border: 1px solid #ccc; max-width: 300px; display: none;"></div>
-      <button id="popular-btn" class="btn btn-primary mt-3">Top Movies</button>
-      <button id="discover-btn" class="btn btn-secondary mt-3">Discover by Genre</button>
+      <button id="popular-btn" class="btn mt-3">Top Movies</button>
+      <button id="discover-btn" class="btn mt-3">Discover by Genre</button>
     </section>
     <div class="container-fluid">
       <div class="row">
@@ -32,9 +30,9 @@
         </div>
         <div id="results" class="col-md-8">
           <div class="view-toggle text-left mb-3">
-            <button id="grid-view" class="btn btn-primary active">Grid View</button>
-            <button id="list-view" class="btn btn-secondary">List View</button>
-            <button id="filter-year-btn">Filter by Year</button>
+              <button id="grid-view" class="btn active">Grid View</button>
+              <button id="list-view" class="btn ">List View</button>
+            <button id="filter-year-btn" class="btn ">Filter by Year</button>
             <input type="number" id="year-input" placeholder="Enter Year" min="1900" max="2024" />
           </div>
           <div id="results-container" class="row"></div>
@@ -42,13 +40,17 @@
             <div id="genre-list" class="row"></div>
             <div id="genre-details-container" class="mt-4"></div>
           </div>
-          <div id="pagination" class="pagination-buttons text-center mt-4">
-            <button id="prev-page" class="btn btn-outline-secondary" disabled>Previous</button>
-            <button id="next-page" class="btn btn-outline-secondary">Next</button>
-          </div>
+          
+
         </div>
       </div>
+      <div id="pagination" class="pagination-buttons">
+        
+          <button id="prev-page">Previous</button>
+          <button id="next-page">Next</button>
+      </div>
     </div>
+    
   </main>
   
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
